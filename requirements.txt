@@ -14,3 +14,4 @@ lamp-core==2021.10.4
 LAMP-cortex==2024.5.3
 requests==2.32.3
 nbformat==5.10.4
+scikit-learn==1.3.2
