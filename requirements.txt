@@ -1,4 +1,4 @@
-scipy == 1.14.1 
+scipy == 1.10.1 
 altair==4.2.2
 calplot==0.1.7.5
 cortex==0.42.1
