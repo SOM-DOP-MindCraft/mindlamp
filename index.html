@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Report Generator</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            max-width: 400px; 
+            margin: 0 auto; 
+            padding: 20px; 
+        }
+    </style>
+</head>
+<body>
+    <h1>User Report Generator</h1>
+    <form id="reportForm">
+        <label for="userId">Enter User ID:</label>
+        <input type="text" id="userId" name="userId" required>
+        <button type="submit">Generate Report</button>
+    </form>
+
+    <script>
+        document.getElementById('reportForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const userId = document.getElementById('userId').value;
+            
+            // Trigger GitHub Actions workflow
+            fetch('https://api.github.com/repos/SOM-DOP-MindCraft/mindlamp/dispatches', {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'token ACCESS_TOKEN',
+                    'Accept': 'application/vnd.github.v3+json'
+                },
+                body: JSON.stringify({
+                    event_type: 'generate-report',
+                    client_payload: { user_id: userId }
+                })
+            })
+            .then(response => {
+                alert(`Report generation initiated for user: ${userId}. 
+                    Check the Actions tab or GitHub Pages for the result.`);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to initiate report generation');
+            });
+        });
+    </script>
+</body>
+</html>
