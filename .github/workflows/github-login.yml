@@ -1,0 +1,30 @@
+name: GitHub OAuth Token Exchange
+
+on:
+  repository_dispatch:
+    types: [exchange-token]
+
+jobs:
+  exchange-token:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Exchange Code for Token
+      env:
+        CLIENT_ID: ${{ secrets.OAUTH_CLIENT_ID }}
+        CLIENT_SECRET: ${{ secrets.OAUTH_CLIENT_SECRET }}
+      run: |
+        response=$(curl -X POST \
+          -H "Accept: application/json" \
+          -d "client_id=${CLIENT_ID}" \
+          -d "client_secret=${CLIENT_SECRET}" \
+          -d "code=${{ github.event.client_payload.code }}" \
+          https://github.com/login/oauth/access_token)
+        
+        access_token=$(echo $response | jq -r .access_token)
+        
+        user_info=$(curl -H "Authorization: token ${access_token}" \
+          https://api.github.com/user)
+        
+        username=$(echo $user_info | jq -r .login)
+        
+        echo "::set-output name=username::$username"
