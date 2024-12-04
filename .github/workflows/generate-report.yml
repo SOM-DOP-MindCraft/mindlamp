@@ -1,14 +1,8 @@
 name: Generate Subject Report
 
 on:
-  workflow_dispatch:
-    inputs:
-      subjectid:
-        description: 'Subject ID to generate report for'
-        required: true
-      username:
-        description: 'GitHub Username'
-        required: true
+  repository_dispatch:
+    types: [generate_report]
 
 jobs:
   generate-report:
@@ -16,10 +10,10 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     
-    - name: Validate User Authorization
+    - name: Validate User
       run: |
-        users=$(jq -r '.allowed_users[]' src/authorized_users.json)
-        if [[ ! " ${users[@]} " =~ " ${{ github.event.inputs.username }} " ]]; then
+        AUTHORIZED_USERS=($(jq -r '.allowed_users[]' src/authorized_users.json))
+        if [[ ! " ${AUTHORIZED_USERS[@]} " =~ " ${{ github.event.client_payload.username }} " ]]; then
           echo "Unauthorized user"
           exit 1
         fi
@@ -27,7 +21,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v3
       with:
-        python-version: '3.8.10'
+        python-version: '3.9'
     
     - name: Install dependencies
       run: |
@@ -36,13 +30,15 @@ jobs:
     
     - name: Generate Report
       env:
-        LAMPACCESSKEY: ${{ secrets.LAMPACCESSKEY }}
-        LAMPSERVERKEY: ${{ secrets.LAMPSERVERKEY }}
-        REDCAPAPI: ${{ secrets.REDCAPAPI }}
-      run: python src/generate_report.py ${{ github.event.inputs.subjectid }}
+        SUBJECTID: ${{ github.event.client_payload.subjectid }}
+        # Use the triggering user's personal secrets
+        REDCAPAPI: ${{ secrets[format('{0}_API_KEY', github.event.client_payload.username)] }}
+        LAMPUSERNAME: ${{ secrets[format('{0}_USERNAME', github.event.client_payload.username)] }}
+        LAMPPASSWORD: ${{ secrets[format('{0}_PASSWORD', github.event.client_payload.username)] }}
+      run: python src/generate_report.py ${{ env.SUBJECTID }}
     
     - name: Upload Report
       uses: actions/upload-artifact@v3
       with:
         name: subject-report
-        path: reports/DNreport.html
+        path: reports/TMLDNreport.html
