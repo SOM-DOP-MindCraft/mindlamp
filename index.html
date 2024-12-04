@@ -8,7 +8,6 @@
         ];
 
         function checkAuth() {
-            // GitHub Pages provides this via _username cookie
             const username = document.cookie.replace(/(?:(?:^|.*;\s*)_username\s*\=\s*([^;]*).*$)|^.*$/, "$1");
             
             if (!AUTHORIZED_USERS.includes(username)) {
@@ -43,7 +42,8 @@
     </script>
 </head>
 <body onload="checkAuth()">
+    <h1>Subject Report Generator</h1>
     <input type="text" id="subjectid" placeholder="Enter Subject ID">
-    <button onclick="submitForm()">Generate Report</button>
+    <button onclick="submitReport()">Generate Report</button>
 </body>
 </html>
