@@ -3,43 +3,48 @@
 <head>
     <title>Subject Report Generator</title>
     <script>
+        const AUTHORIZED_USERS = [
+            'username1', 
+            'username2', 
+            'username3'
+        ];
+
         function checkAuth() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const token = urlParams.get('token');
+            // GitHub Pages provides this via _username cookie
+            const username = document.cookie.replace(/(?:(?:^|.*;\s*)_username\s*\=\s*([^;]*).*$)|^.*$/, "$1");
             
-            if (!token) {
-                window.location.href = '/login';
-                return;
+            if (!AUTHORIZED_USERS.includes(username)) {
+                alert('Unauthorized access');
+                window.location.href = '/login.html';
+                return false;
             }
-            
-            // Store token securely
-            sessionStorage.setItem('githubToken', token);
+            return true;
         }
-        
+
         function submitForm() {
-            const token = sessionStorage.getItem('githubToken');
+            if (!checkAuth()) return;
+
             const subjectid = document.getElementById('subjectid').value;
-            
-            fetch('https://api.github.com/repos/OWNER/REPO/dispatches', {
+            const username = document.cookie.replace(/(?:(?:^|.*;\s*)_username\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+
+            fetch('https://api.github.com/repos/SOM-DOP-MINDCraft/mindlamp/dispatches', {
                 method: 'POST',
                 headers: {
-                    'Authorization': `token ${token}`,
+                    'Authorization': `token ${{ secrets.GITHUB_TOKEN }}`,
                     'Accept': 'application/vnd.github.v3+json'
                 },
                 body: JSON.stringify({
                     'event_type': 'generate_report',
                     'client_payload': {
                         'subjectid': subjectid,
-                        'username': 'current_user'
+                        'username': username
                     }
                 })
             });
         }
-        
-        window.onload = checkAuth;
     </script>
 </head>
-<body>
+<body onload="checkAuth()">
     <input type="text" id="subjectid" placeholder="Enter Subject ID">
     <button onclick="submitForm()">Generate Report</button>
 </body>
