@@ -33,9 +33,10 @@ jobs:
         SUBJECTID: ${{ github.event.client_payload.subjectid }}
         # Use the triggering user's personal secrets
         REDCAPAPI: ${{ secrets[format('{0}_API_KEY', github.event.client_payload.username)] }}
-        LAMPUSERNAME: ${{ secrets[format('{0}_USERNAME', github.event.client_payload.username)] }}
-        LAMPPASSWORD: ${{ secrets[format('{0}_PASSWORD', github.event.client_payload.username)] }}
+        LAMP_ACCESS_KEY: ${{ secrets[format('{0}_USERNAME', github.event.client_payload.username)] }}
+        LAMP_SECRET_KEY: ${{ secrets[format('{0}_PASSWORD', github.event.client_payload.username)] }}
       run: python src/generate_report.py ${{ env.SUBJECTID }}
+
     
     - name: Upload Report
       uses: actions/upload-artifact@v3
