@@ -10,10 +10,10 @@ OUTPUT_DIR=$MAIN_DIR/
 $OUTPUT_DIR/$OUTPUT_FILE
 
 # Path to the output HTML file
-OUTPUT_FILE="TMLDNreport.html"
+OUTPUT_FILE="DNreport.html"
 
 # Path to the notebook file
-NOTEBOOK="/workspaces/mindlamp/notebooks/TMLDNreport.ipynb"
+NOTEBOOK="/workspaces/mindlamp/notebooks/DNreport_Dec2024.ipynb"
 
 
 # Ensure the reports directory exists
